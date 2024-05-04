@@ -25,7 +25,6 @@ class Agent(CoreModel):
     environment_settings = TextField(null=True)
     # Unstructured Metadata in JSON form. This would store OS information, and miscellaneous ones
     metadata = JSONField(null=True)
-    agent_state = TextField(null=False)
 
     class Meta:
         table_name = "agent"
@@ -108,7 +107,6 @@ class AgentBucket(CoreModel):
 
     class Meta:
         table_name = "agent_bucket"
-        schema = "agent"
 
 
 agent_bucket_unique_idx = AgentBucket.index(
@@ -117,70 +115,3 @@ agent_bucket_unique_idx = AgentBucket.index(
     unique=True)
 AgentBucket.add_index(agent_bucket_unique_idx)
 
-
-class AgentMetrics(CoreModel):
-    agent = ForeignKeyField(Agent, null=False)
-    """
-    metric_name is one of the below. Exact case
-        cpu_usage
-        number_of_vcpu
-        max_memory
-        memory_used
-        disk_space
-        free_space
-        network_connectivity
-        response_time
-        error_rate
-    """
-    metric_name = TextField(null=False)
-    metric_value = DoubleField(null=False)
-    # Optional field
-    process_name = TextField(null=True)
-
-    class Meta:
-        table_name = "agent_metrics"
-        schema = "agent"
-
-
-class AgentToken(CoreModel):
-    token = TextField(null=False)
-    is_active = BooleanField(default=True, null=False)
-
-    class Meta:
-        table_name = "agent_token"
-        schema = "agent"
-
-
-agent_token_unique_idx = AgentToken.index(
-    AgentToken.token,
-    unique=True)
-AgentToken.add_index(agent_token_unique_idx)
-
-
-class AgentTokenAudit(CoreModel):
-    agent = ForeignKeyField(Agent, null=False)
-    token = ForeignKeyField(AgentToken, null=False)
-
-    class Meta:
-        table_name = "agent_token_audit"
-        schema = "agent"
-
-class UserFilePermission(CoreModel):
-    file = ForeignKeyField(File,null=False)
-    user = TextField(null=False)
-    permissions = JSONField(null=False)
-
-    class Meta:
-        table_name = "user_file_permissions"
-        schema = "agent"
-
-class AgentFileAudit(CoreModel):
-    agent = ForeignKeyField(Agent, null=False)
-    user_name = TextField(null=False)
-    user_email= TextField(null=False)
-    file_name = TextField(null=False)
-    operation = TextField(null=False)
-
-    class Meta:
-        table_name = "agent_file_audit"
-        schema = "agent"
